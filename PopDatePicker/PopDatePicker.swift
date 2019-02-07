@@ -14,21 +14,21 @@ public class PopDatePicker: NSDatePicker {
     let popover = NSPopover()
     var showingPopover = false
     
-    public var preferredPopoverEdge = NSRectEdge.MaxX
+    public var preferredPopoverEdge = NSRectEdge.maxX
     public var shouldShowPopover = { return true }
     
     public override func awakeFromNib() {
         action = "dateAction"
         controller.datePicker.action = "popoverDateAction"
-        controller.datePicker.bind(NSValueBinding, toObject: self, withKeyPath: "dateValue", options: nil)
+        controller.datePicker.bind(NSBindingName.value, to: self, withKeyPath: "dateValue", options: nil)
         popover.contentViewController = controller
-        popover.behavior = .Semitransient
+        popover.behavior = .semitransient
     }
     
     func popoverDateAction() {
-        if let bindingInfo: NSDictionary = infoForBinding(NSValueBinding) {
-            if let keyPath = bindingInfo.valueForKey(NSObservedKeyPathKey) as? String {
-                bindingInfo.valueForKey(NSObservedObjectKey)?.setValue(dateValue, forKeyPath: keyPath)
+        if let bindingInfo = infoForBinding(NSBindingName.value) as? NSDictionary {
+            if let keyPath = bindingInfo.value(forKey: NSBindingInfoKey.observedKeyPath.rawValue) as? String {
+                (bindingInfo.value(forKey: NSBindingInfoKey.observedObject.rawValue) as AnyObject).setValue(dateValue, forKeyPath: keyPath)
             }
         }
     }
@@ -37,16 +37,16 @@ public class PopDatePicker: NSDatePicker {
         controller.datePicker.dateValue = dateValue
     }
     
-    public override func mouseDown(theEvent: NSEvent) {
+    public override func mouseDown(with theEvent: NSEvent) {
         becomeFirstResponder()
-        super.mouseDown(theEvent)
+        super.mouseDown(with: theEvent)
     }
     
     public override func becomeFirstResponder() -> Bool {
         if shouldShowPopover() {
             showingPopover = true
             controller.datePicker.dateValue = dateValue
-            popover.showRelativeToRect(bounds, ofView: self, preferredEdge: preferredPopoverEdge)
+            popover.show(relativeTo: bounds, of: self, preferredEdge: preferredPopoverEdge)
             showingPopover = false
         }
         return super.becomeFirstResponder()
@@ -70,16 +70,16 @@ class PopDatePickerController: NSViewController {
         super.init(coder: coder)
     }
     
-    override init?(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         datePicker = NSDatePicker(frame: NSMakeRect(22, 17, 139, 148))
         super.init(nibName: nil, bundle: nil)
         
         let popoverView = NSView(frame: NSMakeRect(0, 0, 180, 180))
-        datePicker.datePickerStyle = .ClockAndCalendarDatePickerStyle
+        datePicker.datePickerStyle = .clockAndCalendar
         datePicker.drawsBackground = false
         let cell = datePicker.cell as? NSDatePickerCell
-        cell?.bezeled = false
-        cell?.sendActionOn(Int(NSEventType.LeftMouseDown.rawValue))
+        cell?.isBezeled = false
+        cell?.sendAction(on: NSEvent.EventTypeMask(rawValue: UInt64(Int(NSEvent.EventType.leftMouseDown.rawValue))))
         popoverView.addSubview(datePicker)
         view = popoverView
     }

@@ -17,23 +17,23 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        datePicker.dateValue = NSDate()
+        datePicker.dateValue = Date()
         
         datePicker.shouldShowPopover = { [weak self] in
-            return self?.showPopoverButton.state == NSOnState
+            return self?.showPopoverButton.state == NSControl.StateValue.on
         }
     }
     
     @IBAction func preferredEdgeChanged(sender: NSPopUpButton) {
         switch sender.indexOfSelectedItem {
         case 0:
-            datePicker.preferredPopoverEdge = .MaxX
+            datePicker.preferredPopoverEdge = .maxX
         case 1:
-            datePicker.preferredPopoverEdge = .MinX
+            datePicker.preferredPopoverEdge = .minX
         case 2:
-            datePicker.preferredPopoverEdge = .MaxY
+            datePicker.preferredPopoverEdge = .maxY
         case 3:
-            datePicker.preferredPopoverEdge = .MinY
+            datePicker.preferredPopoverEdge = .minY
         default:
             break
             
